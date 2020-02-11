@@ -1,0 +1,18 @@
+######################
+# Threads to use
+######################
+THREADS: 5
+
+######################
+# Database information
+######################
+DATABASE:
+    type: 'mysql'
+    mysql:
+        user: 'bravo'
+        password: 'bravo'
+        host: '127.0.0.1'
+        database: 'bravo'
+        port: 3306
+    sqlite:
+        name: 'bravo'
