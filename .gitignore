@@ -1,3 +1,4 @@
+config.yml
 .idea
 faces/tmp/*
 faces/detected/*
