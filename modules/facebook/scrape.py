@@ -1,8 +1,7 @@
 import requests, sys
 from bs4 import BeautifulSoup
-from PIL import Image
-from io import BytesIO
 from modules.core.face import Face
+from modules.core.images import Images
 
 
 class Scrape:
@@ -11,6 +10,8 @@ class Scrape:
     Scrape constructor, contains scraping selectors
     """
     def __init__(self):
+        self.face = Face()
+        self.images = Images()
         self.selectors = {
             'name': '_2nlw _2nlv',
             'profile_picture': '_11kf img',
@@ -38,13 +39,16 @@ class Scrape:
                 soup = BeautifulSoup(response.content, features="html.parser")
                 profile_picture = self.profile_photo(soup)
                 featured_images = self.featured_photos(soup)
-                work = self.sections(soup)
+                # work = self.sections(soup)
 
-            print(profile_picture)
-            with requests.get(profile_picture, stream=True) as response:
-                image = Image.open(BytesIO(response.content))
-                face = Face.detect_face(image)
-                print(face)
+                # Save the image to a temp folder
+                temp_image = self.images.save(profile_picture)
+                image = self.images.read(temp_image)
+
+                # Detect the face from the image and save it
+                decected_faces = self.face.detect_face(image)
+                save = self.face.save(decected_faces)
+                print(save)
 
     """
     Get the profiles profile photo

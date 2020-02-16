@@ -1,4 +1,6 @@
 .idea
+faces/tmp/*
+faces/detected/*
 config/__pycache__
 modules/core/__pycache__
 modules/database/__pycache__

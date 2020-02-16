@@ -28,6 +28,7 @@ class Face:
         print(faces)
         # Detected faces are returned as an object with the coordinates
         for i, face in enumerate(faces):
+            print(i, face)
             crop = image[face.top():face.bottom(), face.left():face.right()]
             cv2.imwrite("./.faces/aligned_face_{}_{}_crop.jpg".format('file_name'.replace('/', '_'), i), crop)
 
