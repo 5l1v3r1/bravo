@@ -1,2 +1,6 @@
 .idea
+config/__pycache__
+modules/core/__pycache__
+modules/database/__pycache__
 modules/facebook/__pycache__
+modules/database/adapters/__pycache__
