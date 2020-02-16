@@ -4,73 +4,28 @@ class Mysql:
     def __init__(self, database):
         self.database = database
 
-    # Save to the database
-    def save(self, files):
-        sql = """
-            INSERT INTO contents(
-                repo_id,
-                name,
-                file,
-                content,
-                commit_id
-            )
-            VALUES(%s, %s, %s, %s, %s)
+    # Mysql constructor
+    def initialize(self):
+        createFaceEncodingsTable = """
+            CREATE TABLE IF NOT EXISTS `face_encodings` (
+                `id` int unsigned NOT NULL AUTO_INCREMENT,
+                `person_id` int DEFAULT NULL,
+                `image_id` int DEFAULT NULL,
+                `created_at` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;  
         """
-        for attempt in range(20):
-            try:
-                cur = self.database.cursor()
-                cur.executemany(sql, files)
-                self.database.commit()
-            except:
-                pass
-            else:
-                break
 
-    # Add repo to indexed
-    def indexed(self, repo_id):
-        sql = """
-            INSERT INTO repositories(repo_id)
-            VALUES(%s)
-        """
-        for attempt in range(20):
-            try:
-                cur = self.database.cursor()
-                cur.execute(sql, (repo_id,))
-                self.database.commit()
-            except:
-                pass
-            else:
-                break
-
-    # Already indexed?
-    def has_been_indexed(self, repo_id):
-        sql = """
-            SELECT repo_id FROM repositories
-            WHERE repo_id = %s
-            LIMIT 1
-        """
         for attempt in range(5):
             try:
                 cur = self.database.cursor()
-                cur.execute(sql, (repo_id, ))
-                indexed = cur.fetchall()
+                cur.execute(createFaceEncodingsTable)
+
+                # Add encoding columns
+                for encoding in range(1, 129):
+                    cur.execute(
+                        "alter table face_encodings add column encoding_%s decimal(10,0) NOT NULL" % encoding
+                    )
             except Exception as e:
+                print(e)
                 pass
-            else:
-                if not indexed:
-                    return False
-                return True
-
-    # Mysql constructor
-    def initialize(self):
-        createContents = """
-            CREATE TABLE IF NOT EXISTS face_encodings(
-                `repo_id` int DEFAULT NULL,
-                `name` TEXT,
-                `file` TEXT,
-                `content` LONGTEXT,
-                `commit_id` varchar(60) DEFAULT NULL,
-                `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;"""
-
-        self.get().cursor().execute(createContents)

@@ -1,5 +1,8 @@
 requests
 pygame
 face_recognition
-mysql-connector
+opencv-python
+mysql-connector-python
 ruamel.yaml
+py-postgresql
+beautifulsoup4
