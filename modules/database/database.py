@@ -1,6 +1,5 @@
 import postgresql
 import mysql.connector
-from mysql.connector import Error
 from mysql.connector import pooling
 from config.database import Database as Config
 from modules.database.adapters.mysql import Mysql
@@ -11,21 +10,27 @@ class Database:
 
     # Save file to adapters
     @staticmethod
-    def save(database, files):
+    def save(database, profile):
         if Config().type() == 'mysql':
-            Mysql(database).save(files)
+            Mysql(database).save(profile)
+        elif Config().type() == 'postgres':
+            Postgres(database).save(profile)
 
     # Add to indexed
     @staticmethod
-    def indexed(database, repo_id):
+    def indexed(database, profile_id):
         if Config().type() == 'mysql':
-            Mysql(database).indexed(repo_id)
+            Mysql(database).indexed(profile_id)
+        elif Config().type() == 'postgres':
+            Postgres(database).indexed(profile_id)
 
     # check if repo has been indexed
     @staticmethod
-    def has_been_indexed(database, repo_id):
+    def has_been_indexed(database, profile_id):
         if Config().type() == 'mysql':
-            Mysql(database).has_been_indexed(repo_id)
+            Mysql(database).has_been_indexed(profile_id)
+        elif Config().type() == 'postgres':
+            Postgres(database).has_been_indexed(profile_id)
 
     # initialize database
     @staticmethod
@@ -42,10 +47,8 @@ class Database:
             if Config().type() == 'mysql':
                 connector = mysql.connector.pooling.MySQLConnectionPool(**Config().mysql())
             elif Config().type() == 'postgres':
-                print(Config().postgres())
                 connector = postgresql.open(Config().postgres())
 
             return connector
         except Exception as e:
-            print(e)
             return

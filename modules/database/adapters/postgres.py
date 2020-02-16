@@ -1,10 +1,14 @@
 class Postgres:
 
-    # Postgres constructor
+    """
+    Postgres constructor
+    """
     def __init__(self, database):
         self.database = database
 
-    # Initialize the database
+    """
+    Initialize the database, create the tables
+    """
     def initialize(self):
         self.database.execute("create extension if not exists cube;")
         self.database.execute("drop table if exists faces")

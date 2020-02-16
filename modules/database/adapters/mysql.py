@@ -1,10 +1,14 @@
 class Mysql:
 
-    # Mysql constructor
+    """
+    Mysql constructor
+    """
     def __init__(self, database):
         self.database = database
 
-    # Mysql constructor
+    """
+    Initialize the database, create the tables
+    """
     def initialize(self):
         createFaceEncodingsTable = """
             CREATE TABLE IF NOT EXISTS `face_encodings` (
@@ -27,5 +31,4 @@ class Mysql:
                         "alter table face_encodings add column encoding_%s decimal(10,0) NOT NULL" % encoding
                     )
             except Exception as e:
-                print(e)
                 pass
