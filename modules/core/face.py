@@ -23,12 +23,10 @@ class Face:
     """
     Crop and save the face
     """
-    def save(self, faces):
-
-        print(faces)
+    def save(self, faces, image_file, path):
         # Detected faces are returned as an object with the coordinates
-        for i, face in enumerate(faces):
-            print(i, face)
-            crop = image[face.top():face.bottom(), face.left():face.right()]
-            cv2.imwrite("./.faces/aligned_face_{}_{}_crop.jpg".format('file_name'.replace('/', '_'), i), crop)
+        for i, face_rect in enumerate(faces):
+            crop = image_file[face_rect.top():face_rect.bottom(), face_rect.left():face_rect.right()]
+            cv2.imwrite("faces/detected/%s_%s.jpg" % (path, i), crop)
+
 

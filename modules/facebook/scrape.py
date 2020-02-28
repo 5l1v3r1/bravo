@@ -15,10 +15,7 @@ class Scrape:
         self.selectors = {
             'name': '_2nlw _2nlv',
             'profile_picture': '_11kf img',
-            'images': {
-                'parent': '_2a2q _1m6c',
-                'child': '_xcx'
-            },
+            'images': '_2a2q _1m6c',
             'sections': {
                 'parent': '_4qm1',
                 'child': 'clearfix _h71',
@@ -30,39 +27,44 @@ class Scrape:
     """
     Loop through a range, check if the profile has been indexed
     if it's not, index it, with the pictures, likes, general info
-    Store the face encoding in the database
+    Store the face encoding in the database for face recognition lookups
     """
     def scrape(self):
         for profile in range(4, 5):
             uri = 'https://facebook.com/profile.php?id=%d' % profile
             with requests.get(uri) as response:
                 soup = BeautifulSoup(response.content, features="html.parser")
-                profile_picture = self.profile_photo(soup)
-                featured_images = self.featured_photos(soup)
+                images = self.get_images(soup)
                 # work = self.sections(soup)
 
                 # Save the image to a temp folder
-                temp_image = self.images.save(profile_picture)
-                image = self.images.read(temp_image)
+                for image in images:
+                    temp_image = self.images.save(image)
+                    read_image = self.images.read(temp_image)
 
-                # Detect the face from the image and save it
-                decected_faces = self.face.detect_face(image)
-                save = self.face.save(decected_faces)
-                print(save)
+                    # Detect the face from the profile picture and save it
+                    detected_faces = self.face.detect_face(read_image)
+                    save = self.face.save(
+                        detected_faces,
+                        read_image,
+                        self.images.name(image)
+                    )
+
+                # Get the encoding of the face and save to the database
+
+                # Add the profile to the 'scraped' table
+
+                print('Scraped profile: %s' % uri)
 
     """
-    Get the profiles profile photo
+    Get the profile images
     """
-    def profile_photo(self, soup):
-        picture = soup.find('img', class_=self.selectors['profile_picture'])
+    def get_images(self, soup):
+        selectors = soup.find('div', class_=self.selectors['images']).find_all_next('img')
+        images = [soup.find('img', class_=self.selectors['profile_picture'])['src']]
 
-        return picture['src']
-
-    """
-    Get the feature profile photos
-    """
-    def featured_photos(self, soup):
-        images = soup.find_all('img', class_=self.selectors['images'])
+        for image in selectors:
+            images.append(image['src'])
 
         return images
 
